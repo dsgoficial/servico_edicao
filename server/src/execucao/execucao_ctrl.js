@@ -85,7 +85,7 @@ controller.getExecucaoAgendadaData = async () => {
   )
 }
 
-controller.execucaoRotina = async (uuid, parametros) => {
+controller.execucao = async (uuid, parametros) => {
   await db.conn.none(
     `
       INSERT INTO edicao.execucao(uuid, status_id, data_execucao, parametros)

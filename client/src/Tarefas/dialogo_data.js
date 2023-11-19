@@ -13,7 +13,7 @@ import DateFnsUtils from '@date-io/date-fns'
 import { DateTimePicker } from 'material-ui-formik-components/DateTimePicker'
 import ptLocale from 'date-fns/locale/pt-BR'
 
-import { getRotinas, criaTarefaData } from './api'
+import { criaTarefaData } from './api'
 import { dataSchema } from './validation_schema'
 import { SubmitButton } from '../helpers'
 import styles from './styles'
@@ -22,13 +22,10 @@ const DialogoAdiciona = ({ open = false, handleDialog }) => {
   const classes = styles()
 
   const initialValues = {
-    rotinaId: '',
     nome: '',
     configuracao: '',
     parametros: {}
   }
-
-  const [rotinas, setRotinas] = useState([])
 
   const [submitting, setSubmitting] = useState(false)
   const [loaded, setLoaded] = useState(false)
@@ -38,10 +35,6 @@ const DialogoAdiciona = ({ open = false, handleDialog }) => {
 
     const load = async () => {
       try {
-        const response = await getRotinas()
-        if (!response || !isCurrent) return
-
-        setRotinas(response)
         setLoaded(true)
       } catch (err) {
         handleDialog && handleDialog('error', 'Ocorreu um erro ao se comunicar com o servidor.')
@@ -64,7 +57,6 @@ const DialogoAdiciona = ({ open = false, handleDialog }) => {
     try {
       setSubmitting(true)
       const response = await criaTarefaData(
-        values.rotinaId,
         values.nome,
         values.configuracao,
         values.parametros
@@ -100,33 +92,6 @@ const DialogoAdiciona = ({ open = false, handleDialog }) => {
             >
               {({ values, isValid, isSubmitting, isValidating }) => (
                 <Form className={classes.form}>
-                  <div>
-                    <Field
-                      name='rotinaId'
-                      label='Rotina'
-                      variant='outlined'
-                      component={Select}
-                      displayEmpty
-                      className={classes.select}
-                    >
-                      <MenuItem value='' disabled>
-                        Selecione a rotina
-                      </MenuItem>
-                      {rotinas.map(option => (
-                        <MenuItem key={option.id} value={option.id}>
-                          {option.rotina}
-                        </MenuItem>
-                      ))}
-                    </Field>
-                  </div>
-                  <Field
-                    name='nome'
-                    component={TextField}
-                    variant='outlined'
-                    margin='normal'
-                    fullWidth
-                    label='Nome'
-                  />
                   {rotinas.filter(r => {
                     return r.id === values.rotinaId
                   }).map(r => {

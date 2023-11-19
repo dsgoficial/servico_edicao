@@ -36,24 +36,6 @@ export const MainListItems = props => {
         </ListItem>
       </Tooltip>
 
-      <Tooltip title='Adicionar rotina' placement='right-start'>
-        <ListItem button component={NavLink} replace exact to='/adicionar_rotina' activeClassName={classes.active}>
-          <ListItemIcon>
-            <LibraryAddIcon />
-          </ListItemIcon>
-          <ListItemText primary='Adicionar rotina' />
-        </ListItem>
-      </Tooltip>
-
-      <Tooltip title='Atualizar rotina' placement='right-start'>
-        <ListItem button component={NavLink} replace exact to='/atualizar_rotina' activeClassName={classes.active}>
-          <ListItemIcon>
-            <EditIcon />
-          </ListItemIcon>
-          <ListItemText primary='Atualizar rotina' />
-        </ListItem>
-      </Tooltip>
-
       <Tooltip title='Agendar tarefas' placement='right-start'>
         <ListItem button component={NavLink} replace exact to='/agendar_tarefas' activeClassName={classes.active}>
           <ListItemIcon>
@@ -63,12 +45,12 @@ export const MainListItems = props => {
         </ListItem>
       </Tooltip>
 
-      <Tooltip title='Executar rotinas' placement='right-start'>
+      <Tooltip title='Executar' placement='right-start'>
         <ListItem button component={NavLink} replace exact to='/executar' activeClassName={classes.active}>
           <ListItemIcon>
             <PlayArrowIcon />
           </ListItemIcon>
-          <ListItemText primary='Executar rotinas' />
+          <ListItemText primary='Executar' />
         </ListItem>
       </Tooltip>
 
@@ -78,15 +60,6 @@ export const MainListItems = props => {
             <LibraryBooksIcon />
           </ListItemIcon>
           <ListItemText primary='Categorias' />
-        </ListItem>
-      </Tooltip>
-
-      <Tooltip title='Rotinas' placement='right-start'>
-        <ListItem button component={NavLink} replace exact to='/rotinas' activeClassName={classes.active}>
-          <ListItemIcon>
-            <ListIcon />
-          </ListItemIcon>
-          <ListItemText primary='Rotinas' />
         </ListItem>
       </Tooltip>
 

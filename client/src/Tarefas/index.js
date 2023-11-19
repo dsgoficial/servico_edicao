@@ -99,7 +99,6 @@ const Tarefas = withRouter(props => {
         loaded={loaded}
         columns={[
           { title: 'Nome', field: 'nome' },
-          { title: 'Rotina', field: 'rotina' },
           { title: 'Próxima execução', field: 'proxima_execucao' },
           { title: 'Data início', field: 'data_inicio' },
           { title: 'Data fim', field: 'data_fim' },
@@ -136,7 +135,6 @@ const Tarefas = withRouter(props => {
         loaded={loaded}
         columns={[
           { title: 'Nome', field: 'nome' },
-          { title: 'Rotina', field: 'rotina' },
           { title: 'Data execução', field: 'data_execucao' },
           { title: 'Usuário', field: 'usuario' },
           { title: 'Data agendamento', field: 'data_agendamento' }

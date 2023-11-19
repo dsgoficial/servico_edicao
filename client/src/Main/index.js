@@ -18,16 +18,13 @@ import { handleLogout } from "./api.js";
 import { PrivateRoute } from "../helpers";
 
 import Dashboard from "../Dashboard";
-import AdicionarRotina from "../AdicionarRotina";
-import AtualizarRotina from "../AtualizarRotina";
 import Categorias from "../Categorias";
-import Rotinas from "../Rotinas";
 import LogsTable from "../LogsTable";
 import GerenciarUsuarios from "../GerenciarUsuarios";
 import ArquivosTemporarios from "../ArquivosTemporarios";
 import Tarefas from "../Tarefas";
 import ExecucaoAgendada from "../ExecucaoAgendada";
-import ExecutarRotina from "../ExecutarRotina";
+import Executar from "../Executar";
 
 const Main = withRouter((props) => {
   const classes = styles();
@@ -114,20 +111,9 @@ const Main = withRouter((props) => {
           <div className={classes.appBarSpacer} />
           <Container maxWidth="xl" className={classes.container}>
             <PrivateRoute exact path="/" component={Dashboard} />
-            <PrivateRoute
-              exact
-              path="/adicionar_rotina"
-              component={AdicionarRotina}
-            />
-            <PrivateRoute
-              exact
-              path="/atualizar_rotina"
-              component={AtualizarRotina}
-            />
             <PrivateRoute exact path="/categorias" component={Categorias} />
-            <PrivateRoute exact path="/rotinas" component={Rotinas} />
             <PrivateRoute exact path="/agendar_tarefas" component={Tarefas} />
-            <PrivateRoute exact path="/executar" component={ExecutarRotina} />
+            <PrivateRoute exact path="/executar" component={Executar} />
             <PrivateRoute
               exact
               path="/execucoes_agendadas"

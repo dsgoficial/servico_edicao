@@ -18,18 +18,16 @@ import Backdrop from '@material-ui/core/Backdrop'
 import { MessageSnackBar, SubmitButton } from '../helpers'
 import styles from './styles'
 import validationSchema from './validation_schema'
-import { handleExecute, getRotinas } from './api'
+import { handleExecute } from './api'
 import { handleApiError } from '../services'
 
-const ExecutarRotina = withRouter(props => {
+const Executar = withRouter(props => {
   const classes = styles()
 
   const initialValues = {
-    rotinaId: '',
     parametros: {}
   }
 
-  const [rotinas, setRotinas] = useState([])
   const [resultDialog, setResultDialog] = useState({
     open: false,
     log: '',
@@ -42,10 +40,6 @@ const ExecutarRotina = withRouter(props => {
     let isCurrent = true
     const load = async () => {
       try {
-        const response = await getRotinas()
-        if (!response || !isCurrent) return
-
-        setRotinas(response)
         setLoaded(true)
       } catch (err) {
         if (!isCurrent) return
@@ -62,15 +56,14 @@ const ExecutarRotina = withRouter(props => {
   const handleForm = async (values, { resetForm }) => {
     try {
       const result = await handleExecute(
-        values.rotinaId,
         values.parametros
       )
       if (result) {
         resetForm(initialValues)
         if (result.status === 'Erro') {
-          return setSnackbar({ status: 'error', msg: 'Erro na execução da rotina', date: new Date() })
+          return setSnackbar({ status: 'error', msg: 'Erro na execução da exportação', date: new Date() })
         }
-        setSnackbar({ status: 'success', msg: 'Rotina executada com sucesso', date: new Date() })
+        setSnackbar({ status: 'success', msg: 'Exportação executada com sucesso', date: new Date() })
         setResultDialog({ open: true, log: result.log, sumario: result.sumario })
       }
     } catch (err) {
@@ -93,10 +86,9 @@ const ExecutarRotina = withRouter(props => {
         <Container maxWidth='sm'>
           <Paper className={classes.paper}>
             <div className={classes.formArea}>
-              {rotinas.length > 0 ? (
                 <>
                   <Typography variant='h5'>
-                    Executar rotina
+                    Executar
                   </Typography>
                   <Formik
                     initialValues={initialValues}
@@ -166,17 +158,6 @@ const ExecutarRotina = withRouter(props => {
                     )}
                   </Formik>
                 </>
-              )
-                : (
-                  <div className={classes.root}>
-                    <Typography component='h1' variant='body1'>
-                      Sem rotinas cadastradas
-                    </Typography>
-                    <LinkMui to='/adicionar_rotina' variant='body1' component={Link}>
-                      Cadastrar rotina
-                    </LinkMui>
-                  </div>
-                )}
             </div>
           </Paper>
         </Container>
@@ -194,10 +175,6 @@ const ExecutarRotina = withRouter(props => {
             {resultDialog.sumario.map((s, i) => (
               <p key={i}><b>{s.classes}</b> {s.feicoes}</p>
             ))}
-          </div>
-          <div style={{ margin: '15px' }}>
-            <Typography variant='h6' gutterBottom>Log de Execução</Typography>
-            <div>{resultDialog.log}</div>
           </div>
         </DialogContent>
         <DialogActions>

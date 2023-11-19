@@ -76,12 +76,12 @@ router.post(
   asyncHandler(async (req, res, next) => {
     const jobUuid = uuidv4();
 
-    await execucaoCtrl.execucaoRotina(
+    await execucaoCtrl.execucao(
       jobUuid,
       req.body.parametros
     );
 
-    const msg = "Execução da rotina requisitada com sucesso";
+    const msg = "Execução da exportação requisitada com sucesso";
 
     return res.sendJsonAndLog(true, msg, httpCode.Created, {
       job_uuid: jobUuid,

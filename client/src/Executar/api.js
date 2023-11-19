@@ -33,10 +33,9 @@ const acompanhaExec = async uuid => {
 }
 
 const handleExecute = async (
-  rotinaId,
   parametros
 ) => {
-  const response = await api.post(`/api/rotinas/${rotinaId}/execucao`, { parametros })
+  const response = await api.post(`/api/execucao/`, { parametros })
   if (
     !('status' in response) ||
     response.status !== 201 ||
@@ -49,8 +48,4 @@ const handleExecute = async (
   return acompanhaExec(response.data.dados.job_uuid)
 }
 
-const getRotinas = async () => {
-  return api.getData('/api/rotinas')
-}
-
-export { handleExecute, getRotinas }
+export { handleExecute }

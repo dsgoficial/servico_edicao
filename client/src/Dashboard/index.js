@@ -17,12 +17,10 @@ const Dashboard = withRouter(props => {
   const [loaded, setLoaded] = useState(false)
 
   const [execucoes, setExecucoes] = useState(0)
-  const [rotinas, setRotinas] = useState(0)
   const [ultimasExecucoes, setUltimasExecucoes] = useState([])
   const [execucoesPorDia, setExecucoesPorDia] = useState([])
   const [execucoesPorMes, setExecucoesPorMes] = useState([])
-  const [execucoesRotinas, setExecucoesRotinas] = useState([])
-  const [errosRotinas, setErrosRotinas] = useState([])
+  const [execucoesDia, setExecucoesDia] = useState([])
   const [tempoExecucao, setTempoExecucao] = useState([])
 
   useEffect(() => {
@@ -32,12 +30,10 @@ const Dashboard = withRouter(props => {
         const response = await getDashboardData()
         if (!response || !isCurrent) return
         setExecucoes(response.execucoes)
-        setRotinas(response.rotinas)
         setUltimasExecucoes(response.ultimasExecucoes)
         setExecucoesPorDia(response.execucoesPorDia)
         setExecucoesPorMes(response.execucoesPorMes)
-        setExecucoesRotinas(response.execucoesRotinas)
-        setErrosRotinas(response.errosRotinas)
+        setExecucoesDia(response.execucoesDia)
         setTempoExecucao(response.tempoExecucao)
         setLoaded(true)
       } catch (err) {
@@ -65,17 +61,11 @@ const Dashboard = withRouter(props => {
           <Grid item xs={12} md={6} lg={3}>
             <Card label='Execuções' currentValue={execucoes} />
           </Grid>
-          <Grid item xs={12} md={6} lg={3}>
-            <Card label='Rotinas' currentValue={rotinas} />
-          </Grid>
           <Grid item xs={12} md={12} lg={12}>
-            <StackedArea title='Execuções por dia por rotina' series={execucoesRotinas} dataKey='data' />
+            <StackedArea title='Execuções por dia' series={execucoesDia} dataKey='data' />
           </Grid>
           <Grid item xs={12} md={12} lg={6}>
-            <Bar title='Tempo de execução por rotina' series={tempoExecucao} fill='#8dd3c7' groupKey='rotina' valueKey='tempo_execucao_medio' />
-          </Grid>
-          <Grid item xs={12} md={12} lg={6}>
-            <StackedArea title='Erros por dia por rotina' series={errosRotinas} dataKey='data' />
+            <Bar title='Tempo de execução' series={tempoExecucao} fill='#8dd3c7' valueKey='tempo_execucao_medio' />
           </Grid>
           <Grid item xs={12}>
             <UltimasExecucoesDataTable data={ultimasExecucoes} />

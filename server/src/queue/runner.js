@@ -37,8 +37,6 @@ const runner = async (workspacePath, parameters) => {
     .split(path.sep)[workspacePath.split(path.sep).length - 1]
     .replace('.fmw', '')
 
-  parameters.LOG_FILE = `${mainPath}${path.sep}fme_logs${path.sep}${fixedWorkspacePath}_${logDate}.log`
-
   const executeCmdArray = [FE_PATH, workspacePath]
   for (const key in parameters) {
     executeCmdArray.push(`--${key} "${parameters[key]}"`)
