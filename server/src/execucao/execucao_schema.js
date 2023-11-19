@@ -1,6 +1,18 @@
 'use strict'
 
-const Joi = require('joi')
+// https://github.com/hapijs/joi/issues/570
+const Joi = baseJoi.extend((joi) => ({
+  base: joi.array(),
+  type: "stringArray",
+  coerce: (value, state, options) => {
+    if (typeof value !== "string") {
+      return value;
+    }
+
+    return value.replace(/^,+|,+$/gm, "").split(",");
+  },
+}));
+
 
 const models = {}
 
@@ -17,5 +29,9 @@ models.paginacaoQuery = Joi.object().keys({
   direcao_ordem: Joi.string().valid('asc', 'desc', ''),
   filtro: Joi.string().allow('')
 })
+
+models.parametros = Joi.object().keys({
+  parametros: Joi.object().required()
+});
 
 module.exports = models

@@ -67,8 +67,6 @@ const ExecucaoAgendada = withRouter(props => {
         columns={[
           { title: 'Agendamento UUID', field: 'agendamento_uuid' },
           { title: 'Agendamento', field: 'agendamento' },
-          { title: 'Rotina', field: 'rotina' },
-          { title: 'Versão', field: 'versao_rotina' },
           { title: 'Status', field: 'status' },
           { title: 'Data', field: 'data_execucao' },
           { title: 'Tempo', field: 'tempo_execucao' }
@@ -114,8 +112,6 @@ const ExecucaoAgendada = withRouter(props => {
         columns={[
           { title: 'Agendamento UUID', field: 'agendamento_uuid' },
           { title: 'Agendamento', field: 'agendamento' },
-          { title: 'Rotina', field: 'rotina' },
-          { title: 'Versão', field: 'versao_rotina' },
           { title: 'Status', field: 'status' },
           { title: 'Data', field: 'data_execucao' },
           { title: 'Tempo', field: 'tempo_execucao' }

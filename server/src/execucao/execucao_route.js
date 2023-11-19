@@ -68,4 +68,26 @@ router.get(
   })
 );
 
+router.post(
+  "/",
+  schemaValidation({
+    body: execucaoSchema.parametros
+  }),
+  asyncHandler(async (req, res, next) => {
+    const jobUuid = uuidv4();
+
+    await execucaoCtrl.execucaoRotina(
+      jobUuid,
+      req.body.parametros
+    );
+
+    const msg = "Execução da rotina requisitada com sucesso";
+
+    return res.sendJsonAndLog(true, msg, httpCode.Created, {
+      job_uuid: jobUuid,
+    });
+  })
+);
+
+
 module.exports = router;

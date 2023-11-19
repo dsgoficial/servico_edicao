@@ -10,13 +10,13 @@ const handleTarefas = {};
 
 handleTarefas.tarefasAgendadas = {};
 
-const criaExecucao = async (uuid, versao, rotina, parametros) => {
+const criaExecucao = async (uuid, parametros) => {
   await db.conn.none(
     `
-      INSERT INTO edicao.execucao(uuid, status_id, versao_rotina_id, rotina_id, data_execucao, parametros)
-      VALUES($<uuid>,1,$<versao>,$<rotina>, CURRENT_TIMESTAMP, $<parametros:json>)
+      INSERT INTO edicao.execucao(uuid, status_id, data_execucao, parametros)
+      VALUES($<uuid>,1, CURRENT_TIMESTAMP, $<parametros:json>)
       `,
-    { uuid, versao, rotina, parametros }
+    { uuid, parametros }
   );
 };
 
@@ -25,14 +25,13 @@ const loadTarefaData = (tarefas) => {
     const job = schedule.scheduleJob(t.configuracao, async () => {
       const jobUuid = uuidv4();
       const taskId = `${jobUuid}|${t.uuid}`;
-      await criaExecucao(jobUuid, t.versao, t.rotina, t.parametros);
+      await criaExecucao(jobUuid, t.parametros);
       logger.info("Inicio execução tarefa data", {
         uuid: t.uuid,
       });
       jobQueue.push({
         id: taskId,
-        rotinaPath: t.path,
-        parametros: t.parametros,
+        parametros: t.parametros
       });
     });
     handleTarefas.tarefasAgendadas[t.uuid] = job;
@@ -46,13 +45,12 @@ const loadTarefaCron = (tarefas) => {
       async () => {
         const jobUuid = uuidv4();
         const taskId = `${jobUuid}|${t.uuid}`;
-        await criaExecucao(jobUuid, t.versao, t.rotina, t.parametros);
+        await criaExecucao(jobUuid, t.parametros);
         logger.info("Inicio execução tarefa cron", {
           uuid: t.uuid,
         });
         jobQueue.push({
           id: taskId,
-          rotinaPath: t.path,
           parametros: t.parametros,
         });
       }
@@ -69,11 +67,9 @@ handleTarefas.loadData = (
   uuid,
   path,
   configuracao,
-  parametros,
-  versao,
-  rotina
+  parametros
 ) => {
-  loadTarefaData([{ uuid, path, configuracao, parametros, versao, rotina }]);
+  loadTarefaData([{ uuid, path, configuracao, parametros}]);
 };
 
 handleTarefas.loadCron = (
@@ -82,9 +78,7 @@ handleTarefas.loadCron = (
   configuracao,
   parametros,
   dataInicio,
-  dataFim,
-  versao,
-  rotina
+  dataFim
 ) => {
   loadTarefaCron([
     {
@@ -93,9 +87,7 @@ handleTarefas.loadCron = (
       configuracao,
       parametros,
       data_inicio: dataInicio,
-      data_fim: dataFim,
-      versao,
-      rotina,
+      data_fim: dataFim
     },
   ]);
 };
@@ -103,11 +95,9 @@ handleTarefas.loadCron = (
 handleTarefas.carregaTarefasAgendadas = async () => {
   const tarefasData = await db.conn.any(
     `
-    SELECT ta.uuid, ta.data_execucao AS configuracao, ta.parametros, vr.path, vr.id AS versao, vr.rotina_id AS rotina
+    SELECT ta.uuid, ta.data_execucao AS configuracao, ta.parametros
     FROM edicao.tarefa_agendada_data AS ta
-    INNER JOIN (SELECT *, ROW_NUMBER() OVER (PARTITION BY rotina_id ORDER BY data DESC) rn FROM edicao.versao_rotina) AS vr
-    ON vr.rotina_id = ta.rotina_id
-    WHERE vr.rn = 1 AND ta.data_execucao > now()
+    WHERE ta.data_execucao > now()
     `
   );
   if (tarefasData.length > 0) {
@@ -116,12 +106,10 @@ handleTarefas.carregaTarefasAgendadas = async () => {
 
   const tarefasCron = await db.conn.any(
     `
-    SELECT ta.uuid, ta.configuracao_cron AS configuracao, ta.parametros, vr.path, vr.id AS versao, vr.rotina_id AS rotina,
+    SELECT ta.uuid, ta.configuracao_cron AS configuracao, ta.parametros,
     ta.data_inicio, ta.data_fim
     FROM edicao.tarefa_agendada_cron AS ta
-    INNER JOIN (SELECT *, ROW_NUMBER() OVER (PARTITION BY rotina_id ORDER BY data DESC) rn FROM edicao.versao_rotina) AS vr
-    ON vr.rotina_id = ta.rotina_id
-    WHERE vr.rn = 1 AND (ta.data_fim IS NULL OR ta.data_fim > now())
+    WHERE ta.data_fim IS NULL OR ta.data_fim > now()
     `
   );
   if (tarefasCron.length > 0) {

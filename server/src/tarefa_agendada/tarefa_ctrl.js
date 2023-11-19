@@ -14,10 +14,9 @@ const controller = {};
 
 controller.getCron = async () => {
   const tarefaCron = await db.conn.any(`
-    SELECT ta.id, ta.uuid, ta.rotina_id, ta.nome, r.nome AS rotina, ta.data_agendamento, ta.usuario_id, ta.configuracao_cron AS configuracao,
+    SELECT ta.id, ta.uuid, ta.nome, ta.data_agendamento, ta.usuario_id, ta.configuracao_cron AS configuracao,
     ta.data_inicio, ta.data_fim, ta.parametros, tpg.nome_abrev || ' ' || u.nome_guerra AS usuario
     FROM edicao.tarefa_agendada_cron AS ta
-    INNER JOIN edicao.rotina AS r ON r.id = ta.rotina_id
     LEFT JOIN dgeo.usuario AS u ON u.id = ta.usuario_id
     LEFT JOIN dominio.tipo_posto_grad AS tpg ON tpg.code = u.tipo_posto_grad_id
     WHERE ta.data_fim IS NULL OR ta.data_fim > now()
@@ -50,7 +49,6 @@ controller.getCron = async () => {
 controller.insertCron = async (
   usuarioUuid,
   nome,
-  rotinaId,
   configuracao,
   parametros,
   dataInicio,
@@ -77,12 +75,11 @@ controller.insertCron = async (
     const tarefaUuid = uuidv4();
 
     await t.none(
-      `INSERT INTO edicao.tarefa_agendada_cron(uuid, nome, rotina_id, data_agendamento, usuario_id, configuracao_cron, parametros, data_inicio, data_fim) 
-    VALUES($<uuid>, $<nome>, $<rotinaId>, now(), $<usuarioId>, $<configuracao>, $<parametros:json>, $<dataInicio>, $<dataFim>)`,
+      `INSERT INTO edicao.tarefa_agendada_cron(uuid, nome, data_agendamento, usuario_id, configuracao_cron, parametros, data_inicio, data_fim) 
+    VALUES($<uuid>, $<nome>, now(), $<usuarioId>, $<configuracao>, $<parametros:json>, $<dataInicio>, $<dataFim>)`,
       {
         uuid: tarefaUuid,
         nome,
-        rotinaId,
         usuarioId: usuario.id,
         configuracao,
         parametros,
@@ -91,26 +88,12 @@ controller.insertCron = async (
       }
     );
 
-    const versao = await t.oneOrNone(
-      `SELECT vr.id, vr.path
-    FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY rotina_id ORDER BY data DESC) rn FROM edicao.versao_rotina) AS vr
-    WHERE vr.rn = 1 AND vr.rotina_id = $<rotinaId>`,
-      { rotinaId }
-    );
-
-    if (!versao) {
-      throw new AppError("Rotina inválida", httpCode.BadRequest);
-    }
-
     loadCron(
       tarefaUuid,
-      versao.path,
       configuracao,
       parametros,
       dataInicio,
-      dataFim,
-      versao.id,
-      rotinaId
+      dataFim
     );
   });
 };
@@ -133,10 +116,9 @@ controller.deleteCron = async (uuid) => {
 
 controller.getData = async () => {
   const tarefaData = await db.conn.any(`
-    SELECT ta.nome, ta.id, ta.uuid, ta.rotina_id, r.nome AS rotina, ta.data_agendamento, ta.usuario_id, ta.data_execucao,
+    SELECT ta.nome, ta.id, ta.uuid, ta.data_agendamento, ta.usuario_id, ta.data_execucao,
     ta.parametros, tpg.nome_abrev || ' ' || u.nome_guerra AS usuario
     FROM edicao.tarefa_agendada_data AS ta
-    INNER JOIN edicao.rotina AS r ON r.id = ta.rotina_id
     LEFT JOIN dgeo.usuario AS u ON u.id = ta.usuario_id
     LEFT JOIN dominio.tipo_posto_grad AS tpg ON tpg.code = u.tipo_posto_grad_id
     WHERE ta.data_execucao > now()
@@ -148,7 +130,6 @@ controller.getData = async () => {
 controller.insertData = async (
   usuarioUuid,
   nome,
-  rotinaId,
   configuracao,
   parametros
 ) => {
@@ -165,36 +146,21 @@ controller.insertData = async (
     const tarefaUuid = uuidv4();
 
     await t.none(
-      `INSERT INTO edicao.tarefa_agendada_data(uuid, nome, rotina_id, data_agendamento, usuario_id, data_execucao, parametros) 
-    VALUES($<uuid>, $<nome>, $<rotinaId>, now(), $<usuarioId>, $<configuracao>, $<parametros:json>)`,
+      `INSERT INTO edicao.tarefa_agendada_data(uuid, nome, data_agendamento, usuario_id, data_execucao, parametros) 
+    VALUES($<uuid>, $<nome>, now(), $<usuarioId>, $<configuracao>, $<parametros:json>)`,
       {
         uuid: tarefaUuid,
         nome,
-        rotinaId,
         usuarioId: usuario.id,
         configuracao,
         parametros,
       }
     );
 
-    const versao = await t.oneOrNone(
-      `SELECT vr.id, vr.path
-    FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY rotina_id ORDER BY data DESC) rn FROM edicao.versao_rotina) AS vr
-    WHERE vr.rn = 1 AND vr.rotina_id = $<rotinaId>`,
-      { rotinaId }
-    );
-
-    if (!versao) {
-      throw new AppError("Rotina inválida", httpCode.BadRequest);
-    }
-
     loadData(
       tarefaUuid,
-      versao.path,
       configuracao,
-      parametros,
-      versao.id,
-      rotinaId
+      parametros
     );
   });
 };

@@ -27,7 +27,7 @@ router.post(
   verifyLogin,
   schemaValidation({ body: tarefaSchema.tarefaCron }),
   asyncHandler(async (req, res, next) => {
-    await tarefaCtrl.insertCron(req.usuarioUuid, req.body.nome, req.body.rotina_id, req.body.configuracao, req.body.parametros, req.body.data_inicio, req.body.data_fim)
+    await tarefaCtrl.insertCron(req.usuarioUuid, req.body.nome, req.body.configuracao, req.body.parametros, req.body.data_inicio, req.body.data_fim)
 
     const msg = 'Tarefa criada com sucesso'
 
@@ -66,7 +66,7 @@ router.post(
   verifyLogin,
   schemaValidation({ body: tarefaSchema.tarefaData }),
   asyncHandler(async (req, res, next) => {
-    await tarefaCtrl.insertData(req.usuarioUuid, req.body.nome, req.body.rotina_id, req.body.configuracao, req.body.parametros)
+    await tarefaCtrl.insertData(req.usuarioUuid, req.body.nome, req.body.configuracao, req.body.parametros)
 
     const msg = 'Tarefa criada com sucesso'
 

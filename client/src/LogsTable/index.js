@@ -63,8 +63,6 @@ const LogsTable = withRouter(props => {
         loaded={loaded}
         columns={[
           { title: 'uuid', field: 'uuid' },
-          { title: 'Rotina', field: 'rotina' },
-          { title: 'Versão', field: 'versao_rotina' },
           { title: 'Status', field: 'status' },
           { title: 'Data', field: 'data_execucao' },
           { title: 'Tempo', field: 'tempo_execucao' }

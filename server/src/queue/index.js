@@ -2,15 +2,14 @@ const Queue = require('better-queue')
 
 const { db } = require('../database')
 
-const { fmeRunner, FMEError } = require('./fme_runner')
+const { runner, runnerError } = require('./runner')
 
 const { errorHandler, AppError } = require('../utils')
 
 const jobQueue = new Queue(
   async (input, cb) => {
     try {
-      const result = await fmeRunner(
-        input.rotinaPath,
+      const result = await runner(
         input.parametros
       )
       cb(null, result)
@@ -27,7 +26,7 @@ const updateJob = async (taskId, status, time, log = null, summary = null) => {
 
   return db.conn.none(
     `
-    UPDATE fme.execucao SET status_id = $<status>, tempo_execucao = $<time>,
+    UPDATE edicao.execucao SET status_id = $<status>, tempo_execucao = $<time>,
     sumario = $<summary:json>, log = $<log>, tarefa_agendada_uuid = $<agenda>
     WHERE uuid = $<uuid>
     `,
@@ -45,7 +44,7 @@ jobQueue.on('task_failed', function (taskId, err, stats) {
       `Falha na execução de ${taskId}`
     )
   )
-  const log = (err instanceof FMEError) ? err.log : null
+  const log = (err instanceof runnerError) ? err.log : null
   updateJob(taskId, 3, stats.elapsed / 1000, log)
 })
 

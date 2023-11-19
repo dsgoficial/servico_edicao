@@ -10,53 +10,17 @@ const exec = util.promisify(childProcess.exec)
 
 const { AppError } = require('../utils')
 
-const { FME_PATH, PATH_WORKSPACES } = require('../config')
+const { FE_PATH, PATH_PDF } = require('../config')
 
-class FMEError extends Error {
+class runnerError extends Error {
   constructor(message, log = null) {
     super(message)
     this.log = log
   }
 }
 
-const getLog = async logPath => {
-  try {
-    const dados = await readFile(logPath.trim(), 'utf8')
-    return dados
-  } catch (error) {
-    return ''
-  }
-}
-
-const getSummary = async logPath => {
-  const log = await getLog(logPath)
-
-  const contents = log.toString().split('\n')
-
-  let fim = contents.length
-  let inicio = fim
-  const summary = []
-
-  contents.forEach((d, i) => {
-    let linha = d.split('|')
-    linha = linha[linha.length - 1].trim()
-    if (linha === 'Features Written Summary') {
-      inicio = i + 2
-    }
-    if (i >= inicio && i < fim) {
-      if (linha[0] === '=') {
-        fim = i
-      } else {
-        const e = linha.split(' ')
-        summary.push({ classes: e[0], feicoes: e[e.length - 1] })
-      }
-    }
-  })
-  return { summary, log }
-}
-
-const fmeRunner = async (workspacePath, parameters) => {
-  workspacePath = path.join(PATH_WORKSPACES, workspacePath)
+const runner = async (workspacePath, parameters) => {
+  workspacePath = path.join(PATH_PDF, workspacePath)
 
   const mainPath = workspacePath
     .split(path.sep)
@@ -75,7 +39,7 @@ const fmeRunner = async (workspacePath, parameters) => {
 
   parameters.LOG_FILE = `${mainPath}${path.sep}fme_logs${path.sep}${fixedWorkspacePath}_${logDate}.log`
 
-  const executeCmdArray = [FME_PATH, workspacePath]
+  const executeCmdArray = [FE_PATH, workspacePath]
   for (const key in parameters) {
     executeCmdArray.push(`--${key} "${parameters[key]}"`)
   }
@@ -91,10 +55,10 @@ const fmeRunner = async (workspacePath, parameters) => {
   } catch (e) {
     const log = await getLog(parameters.LOG_FILE)
     if (log) {
-      throw new FMEError('Erro na execução da rotina', log)
+      throw new runnerError('Erro na execução da edição', log)
     }
-    throw new AppError('Erro na execução do FME', null, e)
+    throw new AppError('Erro na execução da edição', null, e)
   }
 }
 
-module.exports = { fmeRunner, FMEError }
+module.exports = { runner, runnerError }

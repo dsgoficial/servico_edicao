@@ -13,16 +13,12 @@ models.uuidParams = Joi.object().keys({
 models.tarefaData = Joi.object().keys({
   nome: Joi.string().required(),
   configuracao: Joi.string().required(),
-  rotina_id: Joi.number().integer()
-    .required(),
   parametros: Joi.object()
 })
 
 models.tarefaCron = Joi.object().keys({
   nome: Joi.string().required(),
   configuracao: Joi.string().required(),
-  rotina_id: Joi.number().integer()
-    .required(),
   parametros: Joi.object(),
   data_inicio: Joi.date().allow(null),
   data_fim: Joi.date().allow(null)
