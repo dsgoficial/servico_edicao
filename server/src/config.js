@@ -25,9 +25,9 @@ dotenv.config({
   path: configPath
 })
 
-const VERSION = '2.0.0'
-const MIN_DATABASE_VERSION = '2.0.0'
-const PATH_PDF = path.join(__dirname, 'pdfs')
+const VERSION = '1.0.0'
+const MIN_DATABASE_VERSION = '1.0.0'
+const PATH_PDF = path.join(__dirname, 'pdf')
 
 const configSchema = Joi.object().keys({
   PORT: Joi.number()

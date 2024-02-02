@@ -5,7 +5,6 @@ const path = require('path')
 const util = require('util')
 const childProcess = require('child_process')
 
-const readFile = util.promisify(fs.readFile)
 const exec = util.promisify(childProcess.exec)
 
 const { AppError } = require('../utils')
@@ -19,42 +18,18 @@ class runnerError extends Error {
   }
 }
 
-const runner = async (workspacePath, parameters) => {
-  workspacePath = path.join(PATH_PDF, workspacePath)
+const runner = async (parameters) => {
 
-  const mainPath = workspacePath
-    .split(path.sep)
-    .slice(0, -1)
-    .join(path.sep)
-
-  const logDate = new Date()
-    .toISOString()
-    .replace(/-/g, '')
-    .replace(/:/g, '')
-    .split('.')[0]
-
-  const fixedWorkspacePath = workspacePath
-    .split(path.sep)[workspacePath.split(path.sep).length - 1]
-    .replace('.fmw', '')
-
-  const executeCmdArray = [FE_PATH, workspacePath]
-  for (const key in parameters) {
-    executeCmdArray.push(`--${key} "${parameters[key]}"`)
-  }
-  const executeCmd = executeCmdArray.join(' ')
+  const executeCmd = `${FE_PATH} -j '${parameters}' -ef ${PATH_PDF}`;
 
   try {
-    const { stderr } = await exec(executeCmd)
-    if (stderr.trim().indexOf('Translation was SUCCESSFUL') === -1) {
-      throw new Error()
-    }
+    const { stdout, stderr } = await exec(executeCmd)
 
-    return getSummary(parameters.LOG_FILE)
-  } catch (e) {
-    const log = await getLog(parameters.LOG_FILE)
-    if (log) {
-      throw new runnerError('Erro na execução da edição', log)
+    if (stderr) {
+      console.error(`stderr: ${stderr}`);
+      throw new Error(stderr);
     }
+  } catch (e) {
     throw new AppError('Erro na execução da edição', null, e)
   }
 }

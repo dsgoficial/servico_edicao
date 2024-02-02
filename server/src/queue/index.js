@@ -17,7 +17,7 @@ const jobQueue = new Queue(
       cb(err, null)
     }
   },
-  { concurrent: 3 }
+  { concurrent: 1 }
 )
 
 const updateJob = async (taskId, status, time, log = null, summary = null) => {

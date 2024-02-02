@@ -30,7 +30,7 @@ router.use('/login', loginRoute)
 
 router.use(
   '/pdf',
-  express.static(path.join(__dirname, 'pdfs'))
+  express.static(path.join(__dirname, 'pdf'))
 )
 
 router.use('/tarefas', tarefaRoute)

@@ -31,6 +31,16 @@ controller.atualizaUsuario = async (uuid, administrador, ativo) => {
   }
 }
 
+/**
+ * Deletes a user by UUID.
+ * 
+ * This is a transactional operation that:
+ *
+ * 1. Checks if the user is an admin and prevents deletion if so. 
+ * 2. Nulls out the user ID in any scheduled tasks.
+ * 3. Deletes the user record.
+ * 4. Throws errors if the user doesn't exist or other constraints fail.
+ */
 controller.deletaUsuario = async uuid => {
   return db.conn.tx(async t => {
     const adm = await t.oneOrNone(
@@ -68,6 +78,7 @@ controller.deletaUsuario = async uuid => {
     }
   })
 }
+
 
 controller.getUsuariosAuthServer = async cadastrados => {
   const usuariosAuth = await getUsuariosAuth()
