@@ -10,7 +10,7 @@ const jobQueue = new Queue(
   async (input, cb) => {
     try {
       const result = await runner(
-        input.json, input.tipo, input.login, input.senha, input.proxyHost, input.proxyPort, input.proxyUser, input.proxyPassword, input.exportTiff
+        input.id, input.json, input.tipo, input.login, input.senha, input.proxyHost, input.proxyPort, input.proxyUser, input.proxyPassword, input.exportTiff
       )
       cb(null, result)
     } catch (err) {
@@ -35,7 +35,7 @@ const updateJob = async (taskId, status, time, log = null, summary = null) => {
 }
 
 jobQueue.on('task_finish', (taskId, result, stats) => {
-  updateJob(taskId, 2, stats.elapsed / 1000, result.log, result.summary)
+  updateJob(taskId, 2, stats.elapsed / 1000, null, result)
 })
 
 jobQueue.on('task_failed', function (taskId, err, stats) {

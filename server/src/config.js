@@ -27,7 +27,7 @@ dotenv.config({
 
 const VERSION = '1.0.0'
 const MIN_DATABASE_VERSION = '1.0.0'
-const PATH_PDF = path.join(__dirname, 'pdf')
+const PATH_EXPORT = path.join(__dirname, 'export')
 
 const configSchema = Joi.object().keys({
   PORT: Joi.number()
@@ -47,7 +47,7 @@ const configSchema = Joi.object().keys({
   FE_PATH: Joi.string().required(),
   VERSION: Joi.string().required(),
   MIN_DATABASE_VERSION: Joi.string().required(),
-  PATH_PDF: Joi.string().required()
+  PATH_EXPORT: Joi.string().required()
 })
 
 const config = {
@@ -62,7 +62,7 @@ const config = {
   FE_PATH: process.env.FE_PATH,
   VERSION,
   MIN_DATABASE_VERSION,
-  PATH_PDF
+  PATH_EXPORT
 }
 
 const { error } = configSchema.validate(config, {

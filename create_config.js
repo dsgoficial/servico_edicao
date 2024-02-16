@@ -283,7 +283,7 @@ const createConfig = async () => {
       {
         type: 'input',
         name: 'fePath',
-        message: 'Entre com o PATH para o plugin Ferramentas de Edição'
+        message: 'Entre com o PATH para o bat de execução do Ferramentas de Edição'
       },
       {
         type: 'input',

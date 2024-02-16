@@ -29,8 +29,8 @@ router.get('/', (req, res, next) => {
 router.use('/login', loginRoute)
 
 router.use(
-  '/pdf',
-  express.static(path.join(__dirname, 'pdf'))
+  '/export',
+  express.static(path.join(__dirname, 'export'))
 )
 
 router.use('/tarefas', tarefaRoute)
