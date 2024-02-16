@@ -45,6 +45,7 @@ const configSchema = Joi.object().keys({
     .uri()
     .required(),
   FE_PATH: Joi.string().required(),
+  QGIS_PATH: Joi.string().required(),
   VERSION: Joi.string().required(),
   MIN_DATABASE_VERSION: Joi.string().required(),
   PATH_EXPORT: Joi.string().required()
@@ -60,6 +61,7 @@ const config = {
   JWT_SECRET: process.env.JWT_SECRET,
   AUTH_SERVER: process.env.AUTH_SERVER,
   FE_PATH: process.env.FE_PATH,
+  QGIS_PATH: process.env.QGIS_PATH,
   VERSION,
   MIN_DATABASE_VERSION,
   PATH_EXPORT

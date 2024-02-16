@@ -10,7 +10,7 @@ const exec = util.promisify(childProcess.exec)
 
 const { AppError } = require('../utils')
 
-const { FE_PATH, PATH_EXPORT } = require('../config')
+const { FE_PATH, QGIS_PATH, PATH_EXPORT } = require('../config')
 
 class runnerError extends Error {
   constructor(message, log = null) {
@@ -29,7 +29,7 @@ const runner = async (id, json, tipo, login, senha, proxyHost, proxyPort, proxyU
 
   await fs.mkdir(exportPath, { recursive: true });
 
-  const executeCmd = `${FE_PATH} --tipo '${tipo}' --json '${filePath}' --login ${login} --senha ${senha} --proxyHost ${proxyHost} --proxyPort ${proxyPort} --proxyUser ${proxyUser} --proxyPassword ${proxyPassword} --exportFolder ${exportPath} --exportTiff ${exportTiff}`;
+  const executeCmd = `${FE_PATH} ${QGIS_PATH} --tipo '${tipo}' --json '${filePath}' --login ${login} --senha ${senha} --proxyHost ${proxyHost} --proxyPort ${proxyPort} --proxyUser ${proxyUser} --proxyPassword ${proxyPassword} --exportFolder ${exportPath} --exportTiff ${exportTiff}`;
 
   try {
     const { stdout, stderr } = await exec(executeCmd)

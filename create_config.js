@@ -110,7 +110,8 @@ const createDotEnv = (
   dbUser,
   dbPassword,
   authServer,
-  fePath
+  fePath,
+  qgisPath
 ) => {
   const secret = crypto.randomBytes(64).toString('hex')
 
@@ -123,6 +124,7 @@ DB_USER=${dbUser}
 DB_PASSWORD=${dbPassword}
 JWT_SECRET=${secret}
 AUTH_SERVER=${authServer}
+QGIS_PATH=${qgisPath}
 FE_PATH=${fePath}`
 
   fs.writeFileSync(path.join(__dirname, 'server', 'config.env'), env)
@@ -282,6 +284,11 @@ const createConfig = async () => {
       },
       {
         type: 'input',
+        name: 'qgisPath',
+        message: 'Entre com o PATH para o QGIS 3.24'
+      },
+      {
+        type: 'input',
         name: 'fePath',
         message: 'Entre com o PATH para o bat de execução do Ferramentas de Edição'
       },
@@ -315,6 +322,7 @@ const createConfig = async () => {
       dbPassword,
       dbCreate,
       fePath,
+      qgisPath,
       authServerRaw,
       authUser,
       authPassword
@@ -361,7 +369,8 @@ const createConfig = async () => {
       dbUser,
       dbPassword,
       authServer,
-      fePath
+      fePath,
+      qgisPath
     )
 
     console.log(
