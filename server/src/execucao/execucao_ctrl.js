@@ -85,7 +85,25 @@ controller.getExecucaoAgendadaData = async () => {
   )
 }
 
-controller.execucao = async (uuid, parametros) => {
+controller.execucao = async (
+  uuid,
+  json,
+  tipo,
+  login,
+  senha,
+  proxyHost,
+  proxyPort,
+  proxyUser,
+  proxyPassword,
+  exportTiff
+) => {
+  parametros = {
+    json,
+    tipo,
+    proxyHost,
+    proxyPort,
+    exportTiff
+  }
   await db.conn.none(
     `
       INSERT INTO edicao.execucao(uuid, status_id, data_execucao, parametros)
@@ -94,7 +112,7 @@ controller.execucao = async (uuid, parametros) => {
     { uuid, parametros }
   )
 
-  jobQueue.push({ id: uuid, parametros })
+  jobQueue.push({ id: uuid, json, tipo, login, senha, proxyHost, proxyPort, proxyUser, proxyPassword, exportTiff })
 }
 
 module.exports = controller

@@ -78,7 +78,15 @@ router.post(
 
     await execucaoCtrl.execucao(
       jobUuid,
-      req.body.parametros
+      req.body.json,
+      req.body.tipo,
+      req.body.login,
+      req.body.senha,
+      req.body.proxyHost,
+      req.body.proxyPort,
+      req.body.proxyUser,
+      req.body.proxyPassword,
+      req.body.exportTiff
     );
 
     const msg = "Execução da exportação requisitada com sucesso";
