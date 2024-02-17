@@ -1,18 +1,6 @@
 'use strict'
 
-// https://github.com/hapijs/joi/issues/570
-const Joi = baseJoi.extend((joi) => ({
-  base: joi.array(),
-  type: "stringArray",
-  coerce: (value, state, options) => {
-    if (typeof value !== "string") {
-      return value;
-    }
-
-    return value.replace(/^,+|,+$/gm, "").split(",");
-  },
-}));
-
+const Joi = require('joi')
 
 const models = {}
 
