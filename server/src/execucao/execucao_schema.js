@@ -27,7 +27,7 @@ models.parametros = Joi.object().keys({
   proxyPort: Joi.number().integer().min(0),
   proxyUser: Joi.string().allow(''),
   proxyPassword: Joi.string().allow(''),
-  exportTiff: Joi.boolean()
+  exportTiff: Joi.boolean().required()
 });
 
 module.exports = models

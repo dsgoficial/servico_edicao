@@ -4,7 +4,7 @@ module.exports = function (app) {
   app.use(
     '/servico_edicao',
     createProxyMiddleware({
-      target: 'http://localhost:3014',
+      target: 'http://localhost:3015',
       changeOrigin: true
     })
   )

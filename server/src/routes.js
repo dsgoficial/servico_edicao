@@ -12,6 +12,7 @@ const { usuarioRoute } = require('./usuario')
 const { execucaoRoute } = require('./execucao')
 const { dashboardRoute } = require('./dashboard')
 const { tarefaRoute } = require('./tarefa_agendada')
+const { exportRoute } = require('./export_files')
 
 const router = express.Router()
 
@@ -40,5 +41,7 @@ router.use('/usuarios', usuarioRoute)
 router.use('/execucoes', execucaoRoute)
 
 router.use('/dashboard', dashboardRoute)
+
+router.use('/export_files', exportRoute)
 
 module.exports = router

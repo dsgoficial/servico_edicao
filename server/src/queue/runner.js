@@ -29,7 +29,23 @@ const runner = async (id, json, tipo, login, senha, proxyHost, proxyPort, proxyU
 
   await fs.mkdir(exportPath, { recursive: true });
 
-  const executeCmd = `${FE_PATH} ${QGIS_PATH} --tipo '${tipo}' --json '${filePath}' --login ${login} --senha ${senha} --proxyHost ${proxyHost} --proxyPort ${proxyPort} --proxyUser ${proxyUser} --proxyPassword ${proxyPassword} --exportFolder ${exportPath} --exportTiff ${exportTiff}`;
+  const parameters = {
+    proxyHost,
+    proxyPort,
+    proxyUser,
+    proxyPassword
+  };
+
+  const executeCmdArray = [FE_PATH, QGIS_PATH, `--tipo '${tipo}'`, `--json '${filePath}'`, `--login ${login}`, `--senha ${senha}`, `--exportPath '${exportPath}'`, `--exportTiff ${exportTiff}`]
+
+  for (const key in parameters) {
+    if (parameters[key]){
+      executeCmdArray.push(`--${key} "${parameters[key]}"`)
+    }
+  }
+
+  const executeCmd = executeCmdArray.join(' ')
+
 
   try {
     const { stdout, stderr } = await exec(executeCmd)

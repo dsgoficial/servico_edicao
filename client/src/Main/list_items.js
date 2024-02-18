@@ -54,15 +54,6 @@ export const MainListItems = props => {
         </ListItem>
       </Tooltip>
 
-      <Tooltip title='Categorias' placement='right-start'>
-        <ListItem button component={NavLink} replace exact to='/categorias' activeClassName={classes.active}>
-          <ListItemIcon>
-            <LibraryBooksIcon />
-          </ListItemIcon>
-          <ListItemText primary='Categorias' />
-        </ListItem>
-      </Tooltip>
-
       <Tooltip title='Execuções agendadas' placement='right-start'>
         <ListItem button component={NavLink} replace exact to='/execucoes_agendadas' activeClassName={classes.active}>
           <ListItemIcon>

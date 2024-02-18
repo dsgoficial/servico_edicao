@@ -21,12 +21,19 @@ import validationSchema from './validation_schema'
 import { handleExecute } from './api'
 import { handleApiError } from '../services'
 
-const Executar = withRouter(props => {
+const ExecutarRotina  = withRouter(props => {
   const classes = styles()
 
   const initialValues = {
-    parametros: {}
-  }
+    tipo: '',
+    login: '',
+    senha: '',
+    proxyHost: '',
+    proxyPort: '',
+    proxyUser: '',
+    proxyPassword: '',
+    exportTiff: false,
+  };
 
   const [resultDialog, setResultDialog] = useState({
     open: false,
@@ -34,29 +41,11 @@ const Executar = withRouter(props => {
     sumario: []
   })
   const [snackbar, setSnackbar] = useState('')
-  const [loaded, setLoaded] = useState(false)
-
-  useEffect(() => {
-    let isCurrent = true
-    const load = async () => {
-      try {
-        setLoaded(true)
-      } catch (err) {
-        if (!isCurrent) return
-        handleApiError(err, setSnackbar)
-      }
-    }
-    load()
-
-    return () => {
-      isCurrent = false
-    }
-  }, [])
 
   const handleForm = async (values, { resetForm }) => {
     try {
       const result = await handleExecute(
-        values.parametros
+        values
       )
       if (result) {
         resetForm(initialValues)
@@ -80,9 +69,20 @@ const Executar = withRouter(props => {
     })
   }
 
+  const handleFileChange = (e, setFieldValue) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const jsonContent = JSON.parse(e.target.result);
+        setFieldValue('json', jsonContent);
+      };
+      reader.readAsText(file);
+    }
+  };
+
   return (
     <>
-      {loaded ? (
         <Container maxWidth='sm'>
           <Paper className={classes.paper}>
             <div className={classes.formArea}>
@@ -101,49 +101,106 @@ const Executar = withRouter(props => {
                           <ReactLoading type='spin' color='#147814' height='7%' width='7%' />
                         </Backdrop>
                         <Form className={classes.form}>
-                          <div>
+                          <FormControl fullWidth margin="normal" variant="outlined">
+                            <InputLabel htmlFor="json-file">JSON File</InputLabel>
+                            <input
+                              id="json-file"
+                              name="json"
+                              type="file"
+                              accept="application/json"
+                              onChange={(e) => handleFileChange(e, setFieldValue)}
+                              style={{ display: 'none' }}
+                            />
+                            <Button variant="contained" component="label" htmlFor="json-file">
+                              Upload JSON
+                            </Button>
+                          </FormControl>
+                          <Field
+                            component={Select}
+                            name="tipo"
+                            label="Tipo"
+                            variant="outlined"
+                            displayEmpty
+                            className={classes.select}
+                            input={<Field component={TextField} />}
+                          >
+                            <MenuItem disabled value="">
+                              Selecione o tipo
+                            </MenuItem>
+                            <MenuItem value="Carta Topográfica 1.3">Carta Topográfica 1.3</MenuItem>
+                            <MenuItem value="Carta Ortoimagem 2.4">Carta Ortoimagem 2.4</MenuItem>
+                          </Field>
+                          <Field
+                            component={TextField}
+                            name="login"
+                            type="text"
+                            label="Login"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                          />
+                          <Field
+                            component={TextField}
+                            name="senha"
+                            type="password"
+                            label="Senha"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                          />
+                          <Field
+                            component={TextField}
+                            name="proxyHost"
+                            type="text"
+                            label="Proxy Host"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                          />
+                          <Field
+                            component={TextField}
+                            name="proxyPort"
+                            type="number"
+                            label="Proxy Port"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                          />
+                          <Field
+                            component={TextField}
+                            name="proxyUser"
+                            type="text"
+                            label="Proxy User"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                          />
+                          <Field
+                            component={TextField}
+                            name="proxyPassword"
+                            type="password"
+                            label="Proxy Password"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                          />
+                          <div className={classes.checkboxField}>
                             <Field
-                              name='rotinaId'
-                              label='Rotina'
-                              variant='outlined'
-                              component={Select}
-                              displayEmpty
-                              className={classes.select}
+                              type="checkbox"
+                              name="exportTiff"
+                              as={TextField}
+                              select
+                              SelectProps={{
+                                native: true,
+                              }}
+                              helperText="Exportar como TIFF?"
+                              variant="outlined"
+                              fullWidth
                             >
-                              <MenuItem value='' disabled>
-                                Selecione a rotina que deseja executar
-                              </MenuItem>
-                              {rotinas.map(option => (
-                                <MenuItem key={option.id} value={option.id}>
-                                  {option.rotina}
-                                </MenuItem>
-                              ))}
+                              <option value="true">Sim</option>
+                              <option value="false">Não</option>
                             </Field>
                           </div>
-                          {rotinas.filter(r => {
-                            return r.id === values.rotinaId
-                          }).map(r => {
-                            if (r.parametros && r.parametros.length > 0) {
-                              return r.parametros.map((p, i) => {
-                                values.parametros[p] = values.parametros[p] || ''
-                                if (p !== 'LOG_FILE') {
-                                  return (
-                                    <Field
-                                      key={i}
-                                      name={`parametros.${p}`}
-                                      component={TextField}
-                                      variant='outlined'
-                                      margin='normal'
-                                      fullWidth
-                                      label={p}
-                                    />
-                                  )
-                                }
-                                return null
-                              })
-                            }
-                            return null
-                          })}
                           <SubmitButton
                             type='submit' disabled={isValidating || !isValid} submitting={isSubmitting}
                             fullWidth
@@ -161,12 +218,6 @@ const Executar = withRouter(props => {
             </div>
           </Paper>
         </Container>
-      )
-        : (
-          <div className={classes.loading}>
-            <ReactLoading type='bars' color='#F83737' height='5%' width='5%' />
-          </div>
-        )}
       <Dialog open={resultDialog.open} onClose={closeLogDialog}>
         <DialogTitle>Sumário execução</DialogTitle>
         <DialogContent>
