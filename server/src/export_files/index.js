@@ -1,5 +1,5 @@
 'use strict'
 
 module.exports = {
-  exportRoute: require('./export_files')
+  exportRoute: require('./export_route')
 }

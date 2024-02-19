@@ -4,7 +4,7 @@ const fs = require('fs').promises;
 const path = require('path')
 const util = require('util')
 const childProcess = require('child_process')
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 
 const exec = util.promisify(childProcess.exec)
 
@@ -22,7 +22,7 @@ class runnerError extends Error {
 const runner = async (id, json, tipo, login, senha, proxyHost, proxyPort, proxyUser, proxyPassword, exportTiff) => {
 
   const uniqueFileName = `${uuidv4()}.json`;
-  const filePath = path.join(__dirname, uniqueFileName);
+  const filePath = path.join(__dirname, '..', 'export', uniqueFileName);
   await fs.writeFile(filePath, JSON.stringify(json, null, 2));
 
   const exportPath = path.join(PATH_EXPORT, id);
@@ -36,7 +36,7 @@ const runner = async (id, json, tipo, login, senha, proxyHost, proxyPort, proxyU
     proxyPassword
   };
 
-  const executeCmdArray = [FE_PATH, QGIS_PATH, `--tipo '${tipo}'`, `--json '${filePath}'`, `--login ${login}`, `--senha ${senha}`, `--exportPath '${exportPath}'`, `--exportTiff ${exportTiff}`]
+  const executeCmdArray = [FE_PATH, `"${QGIS_PATH}"`, `--tipo "${tipo}"`, `--json "${filePath}"`, `--login "${login}"`, `--senha "${senha}"`, `--exportFolder "${exportPath}"`]
 
   for (const key in parameters) {
     if (parameters[key]){
@@ -44,8 +44,13 @@ const runner = async (id, json, tipo, login, senha, proxyHost, proxyPort, proxyU
     }
   }
 
+  if(exportTiff){
+    executeCmdArray.push(`--exportTiff`)
+  }
+
   const executeCmd = executeCmdArray.join(' ')
 
+  console.log(executeCmd)
 
   try {
     const { stdout, stderr } = await exec(executeCmd)
@@ -65,7 +70,7 @@ const runner = async (id, json, tipo, login, senha, proxyHost, proxyPort, proxyU
 
     files.forEach(file => {
       if (file.endsWith('.pdf')) {
-        result.pdf = path.join(exportPath, file); // Assuming the path you want to return is relative to the /export route
+        result.pdf = path.join(exportPath, file);
       } else if (exportTiff && file.endsWith('.tif')) {
         result.geotiff = path.join(exportPath, file);
       }
@@ -74,6 +79,7 @@ const runner = async (id, json, tipo, login, senha, proxyHost, proxyPort, proxyU
     return result
 
   } catch (e) {
+    console.log(e)
     throw new AppError('Erro na execução da edição', null, e)
   }
 }

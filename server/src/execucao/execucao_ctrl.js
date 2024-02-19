@@ -97,7 +97,7 @@ controller.execucao = async (
   proxyPassword,
   exportTiff
 ) => {
-  parametros = {
+  const parametros = {
     json,
     tipo,
     proxyHost,
