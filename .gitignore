@@ -112,3 +112,5 @@ test_request.http
 *.ffs
 
 export/
+
+server/default

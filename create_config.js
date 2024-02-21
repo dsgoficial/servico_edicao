@@ -326,8 +326,7 @@ const getConfigFromUser = options => {
     questions.push({
       type: 'input',
       name: 'fePath',
-      message: 'Entre com o PATH para o bat de execução do Ferramentas de Edição',
-      default: 'C:\\Users\\servidor\\AppData\\Roaming\\QGIS\\QGIS3\\profiles\\default\\python\\plugins\\ferramentas_edicao\\setup_env.bat'
+      message: 'Entre com o PATH para o plugin Ferramentas de Edição'
     })
   }
 
@@ -432,7 +431,7 @@ program
   .option('-authPassword, --auth-password <type>', 'Senha do usuário já existente Serviço de Autenticação que será administrador do Serviço Edição')
   .option('-overwriteEnv, --overwrite-env', 'Sobrescrever arquivo de configuração')
   .option('-qgisPath, --qgis-path', 'PATH para o QGIS 3.24')
-  .option('-fePath, --fe-path', 'PATH para o bat de execução do Ferramentas de Edição')
+  .option('-fePath, --fe-path', 'PATH para o plugin Ferramentas de Edição')
 
 
 program.parse(process.argv)
