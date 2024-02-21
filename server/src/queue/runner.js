@@ -3,10 +3,9 @@
 const fs = require('fs').promises;
 const path = require('path')
 const util = require('util')
-const childProcess = require('child_process')
 const { v4: uuidv4 } = require("uuid");
 
-const { spawn } = require('child_process');
+const exec = util.promisify(require('child_process').exec);
 
 const { AppError } = require('../utils')
 
@@ -79,35 +78,12 @@ const runner = async (id, json, tipo, login, senha, proxyHost, proxyPort, proxyU
   
   const pythonScriptPath = path.join(OSGEO4W_ROOT, "apps", "Python39", "python");
 
-  console.log(`"${pythonScriptPath}"`,`${executeCmdArray.join(' ')}`);
-
   try {
-    const executeCmdPromise = new Promise((resolve, reject) => {
-      const process = spawn(`"${pythonScriptPath}"`, executeCmdArray, { env: env, shell: true });
+    let executeCmd = `"${pythonScriptPath}" ${executeCmdArray.join(' ')}`
 
-      process.stdout.on('data', (data) => {
-          console.log(`stdout: ${data}`);
-      });
-      
-      process.stderr.on('data', (data) => {
-          console.error(`stderr: ${data}`);
-      });
+    console.log('Iniciando exportação: ', id)
 
-      process.on('close', (code) => {
-        if (code === 0) {
-          resolve();
-        } else {
-          reject(new Error(`Process exited with code: ${code}`));
-        }
-      });
-
-      process.on('error', (err) => {
-        console.log(err)
-        reject(err);
-      });
-    });
-
-    await executeCmdPromise;
+    const { stdout, stderr } = await exec(executeCmd, { env });
 
     await fs.unlink(filePath);
 
@@ -119,11 +95,13 @@ const runner = async (id, json, tipo, login, senha, proxyHost, proxyPort, proxyU
 
     files.forEach(file => {
       if (file.endsWith('.pdf')) {
-        result.pdf = path.join(exportPath, file);
+        result.pdf = `api/export/${id}/${file}`; // Use id to construct the relative path
       } else if (exportTiff && file.endsWith('.tif')) {
-        result.geotiff = path.join(exportPath, file);
+        result.geotiff = `api/export/${id}/${file}`; // Similarly for GeoTIFF
       }
     });
+
+    console.log('Finalizada exportação: ', id)
 
     return result
 

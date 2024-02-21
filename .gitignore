@@ -114,3 +114,5 @@ test_request.http
 export/
 
 server/default
+test_post.js
+test_get.js
