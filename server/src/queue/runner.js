@@ -52,7 +52,6 @@ const runner = async (id, json, tipo, login, senha, proxyHost, proxyPort, proxyU
 
   let env = { ...process.env }; // Clone current environment
 
-  // Set or modify the environment variables as per the batch file
   const OSGEO4W_ROOT = QGIS_PATH;
   env.OSGEO4W_ROOT = OSGEO4W_ROOT;
   env.QT_DIR = "Qt5";
@@ -95,9 +94,9 @@ const runner = async (id, json, tipo, login, senha, proxyHost, proxyPort, proxyU
 
     files.forEach(file => {
       if (file.endsWith('.pdf')) {
-        result.pdf = `api/export/${id}/${file}`; // Use id to construct the relative path
+        result.pdf = `api/export/${id}/${file}`;
       } else if (exportTiff && file.endsWith('.tif')) {
-        result.geotiff = `api/export/${id}/${file}`; // Similarly for GeoTIFF
+        result.geotiff = `api/export/${id}/${file}`;
       }
     });
 
