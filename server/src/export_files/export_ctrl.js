@@ -24,22 +24,50 @@ const formatBytes = (bytes, decimals = 2) => {
 
 const controller = {}
 
+async function deleteFilesAndFoldersRecursively(directory) {
+  const entries = await readdir(directory, { withFileTypes: true });
+
+  await Promise.all(entries.map(async (entry) => {
+    const entryPath = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      await deleteFilesAndFoldersRecursively(entryPath);
+    } else if (entry.name.endsWith('.pdf') || entry.name.endsWith('.tif')) {
+      await unlink(entryPath);
+    }
+  }));
+
+  if (directory !== PATH_EXPORT) {
+    await rmdir(directory);
+  }
+}
+
 controller.deleteExportedFiles = async () => {
-  const files = await readdir(PATH_EXPORT)
-  const filesFiltered = files.filter(f => f.endsWith('.pdf') || f.endsWith('.tif'))
-  return Promise.all(filesFiltered.map(f => unlink(path.join(PATH_EXPORT, f))))
+  await deleteFilesAndFoldersRecursively(PATH_EXPORT);
+}
+
+async function getFileStatsRecursively(directory) {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const filesStatsPromises = entries.map(async (entry) => {
+    const entryPath = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      return getFileStatsRecursively(entryPath);
+    } else if (entry.name.endsWith('.pdf') || entry.name.endsWith('.tif')) {
+      return stat(entryPath);
+    }
+    return null;
+  });
+
+  const filesStats = (await Promise.all(filesStatsPromises)).flat();
+  return filesStats.filter(stat => stat);
 }
 
 controller.getInfoExportedFiles = async () => {
-  const files = await readdir(PATH_EXPORT)
-  const filesFiltered = files.filter(f => f.endsWith('.pdf') || f.endsWith('.tif'))
-  const stats = await Promise.all(filesFiltered.map(f => stat(path.join(PATH_EXPORT, f))))
-
-  let size = 0
+  const stats = await getFileStatsRecursively(PATH_EXPORT);
+  let size = 0;
   stats.forEach(s => {
-    size += s.size
-  })
-  return { tamanho: formatBytes(size), arquivos: filesFiltered.length }
+    size += s.size;
+  });
+  return { tamanho: formatBytes(size), arquivos: stats.length };
 }
 
 module.exports = controller
