@@ -15,7 +15,6 @@ const router = express.Router();
 
 router.get(
   "/",
-  verifyLogin,
   schemaValidation({ query: execucaoSchema.paginacaoQuery }),
   asyncHandler(async (req, res, next) => {
     const { execucoes, total } = await execucaoCtrl.getExecucaoPagination(
@@ -48,7 +47,6 @@ router.get(
 
 router.get(
   "/agendada/cron",
-  verifyLogin,
   asyncHandler(async (req, res, next) => {
     const dados = await execucaoCtrl.getExecucaoAgendadaCron();
 
@@ -60,7 +58,6 @@ router.get(
 
 router.get(
   "/agendada/data",
-  verifyLogin,
   asyncHandler(async (req, res, next) => {
     const dados = await execucaoCtrl.getExecucaoAgendadaData();
 
