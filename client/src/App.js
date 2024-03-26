@@ -1,7 +1,7 @@
 import React from 'react'
 import ThemeProvider from './theme';
 import Router from './Routes';
-import CssBaseline from '@material-ui/core/CssBaseline'
+import CssBaseline from '@mui/material/CssBaseline';
 import 'typeface-roboto'
 
 const App = () => (

@@ -43,7 +43,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function CreditNoteDlg() {
+export default function RunEdicao() {
 
     const {
         runEdicao,
@@ -67,8 +67,6 @@ export default function CreditNoteDlg() {
 
     const handleCreate = async (values, { resetForm }) => {
         setSubmitting(true)
-        console.log(values)
-        console.log(Object.entries(values).filter(([_, v]) => v != ""))
         try {
             const data = await runEdicao({
                 ...Object.fromEntries(Object.entries(values).filter(([_, v]) => v !== "")),
