@@ -48,6 +48,14 @@ export default function EdicoesTable({
                 >
                     <CollectionsIcon />
                 </IconButton>
+            ),
+            'geotiffWithoutGrid': (
+                <IconButton
+                    key={key}
+                    onClick={callback}
+                >
+                    <CollectionsIcon />
+                </IconButton>
             )
         }[key]
     }

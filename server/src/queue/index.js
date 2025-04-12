@@ -10,7 +10,7 @@ const jobQueue = new Queue(
   async (input, cb) => {
     try {
       const result = await runner(
-        input.id, input.json, input.tipo, input.login, input.senha, input.proxyHost, input.proxyPort, input.proxyUser, input.proxyPassword, input.exportTiff
+        input.id, input.json, input.tipo, input.login, input.senha, input.proxyHost, input.proxyPort, input.proxyUser, input.proxyPassword, input.exportTiff, input.exportTiffWithoutGrid
       )
       cb(null, result)
     } catch (err) {

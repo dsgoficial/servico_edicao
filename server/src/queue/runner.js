@@ -18,7 +18,7 @@ class runnerError extends Error {
   }
 }
 
-const runner = async (id, json, tipo, login, senha, proxyHost, proxyPort, proxyUser, proxyPassword, exportTiff) => {
+const runner = async (id, json, tipo, login, senha, proxyHost, proxyPort, proxyUser, proxyPassword, exportTiff, exportTiffWithoutGrid) => {
 
   const uniqueFileName = `${uuidv4()}.json`;
   const filePath = path.join(__dirname, '..', 'export', uniqueFileName);
@@ -48,6 +48,9 @@ const runner = async (id, json, tipo, login, senha, proxyHost, proxyPort, proxyU
 
   if(exportTiff){
     executeCmdArray.push(`--exportTiff`)
+  }
+  if(exportTiffWithoutGrid){
+    executeCmdArray.push(`--exportTiffWithoutGrid`)
   }
 
   let env = { ...process.env }; // Clone current environment
@@ -89,12 +92,15 @@ const runner = async (id, json, tipo, login, senha, proxyHost, proxyPort, proxyU
     const files = await fs.readdir(exportPath);
     const result = {
       pdf: '',
-      geotiff: ''
+      geotiff: '',
+      geotiff_sem_grid: '',
     };
 
     files.forEach(file => {
       if (file.endsWith('.pdf')) {
         result.pdf = `api/export/${id}/${file}`;
+      } else if (exportTiffWithoutGrid && file.endsWith('.tif') && file.includes('sem_grid')) {
+        result.geotiff_sem_grid = `api/export/${id}/${file}`;
       } else if (exportTiff && file.endsWith('.tif')) {
         result.geotiff = `api/export/${id}/${file}`;
       }
