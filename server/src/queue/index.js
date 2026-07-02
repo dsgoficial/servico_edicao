@@ -6,6 +6,8 @@ const { runner, runnerError } = require('./runner')
 
 const { errorHandler, AppError } = require('../utils')
 
+const { EXPORT_CONCURRENCY } = require('../config')
+
 const jobQueue = new Queue(
   async (input, cb) => {
     try {
@@ -17,7 +19,7 @@ const jobQueue = new Queue(
       cb(err, null)
     }
   },
-  { concurrent: 1 }
+  { concurrent: EXPORT_CONCURRENCY }
 )
 
 const updateJob = async (taskId, status, time, log = null, summary = null) => {

@@ -9,7 +9,15 @@ const exec = util.promisify(require('child_process').exec);
 
 const { AppError } = require('../utils')
 
-const { FE_PATH, QGIS_PATH, PATH_EXPORT } = require('../config')
+const {
+  FE_PATH,
+  QGIS_PATH,
+  PATH_EXPORT,
+  QGIS_QT_DIR,
+  QGIS_GRASS_DIR,
+  QGIS_PYTHON_DIR,
+  QGIS_PROFILE_PLUGINS_PATH
+} = require('../config')
 
 class runnerError extends Error {
   constructor(message, log = null) {
@@ -56,29 +64,56 @@ const runner = async (id, json, tipo, login, senha, proxyHost, proxyPort, proxyU
   let env = { ...process.env }; // Clone current environment
 
   const OSGEO4W_ROOT = QGIS_PATH;
+
+  // Nomes dos diretorios em <QGIS>\apps (variam por versao do QGIS/ambiente).
+  // Configuraveis via .env (QGIS_QT_DIR / QGIS_GRASS_DIR / QGIS_PYTHON_DIR);
+  // defaults do QGIS 4.0 vem do config.js.
+  const QT_DIR = QGIS_QT_DIR;
+  const GRASS_DIR = QGIS_GRASS_DIR;
+  const PYTHON_DIR = QGIS_PYTHON_DIR;
+
+  // Pasta de plugins do perfil do QGIS onde o plugin esta instalado.
+  // Configuravel via .env (QGIS_PROFILE_PLUGINS_PATH); por padrao usa a pasta
+  // pai de FE_PATH (ex.: ...\profiles\default\python\plugins).
+  const QGIS_PROFILE_PLUGINS = QGIS_PROFILE_PLUGINS_PATH || path.dirname(FE_PATH);
+
   env.OSGEO4W_ROOT = OSGEO4W_ROOT;
-  env.QT_DIR = "Qt5";
-  env.GRASS_DIR = "grass78";
-  env.PYTHON_DIR = "Python39";
-  env.GDAL_DATA = `${OSGEO4W_ROOT}\\share\\gdal`
-  env.GDAL_DRIVER_PATH = `${OSGEO4W_ROOT}\\bin\\gdalplugins`
-  env.GS_LIB = `${OSGEO4W_ROOT}\\apps\\gs\\lib`
-  env.JPEGMEM = 1000000
-  env.OPENSSL_ENGINES = `${OSGEO4W_ROOT}\\lib\\engines-1_1`
-  env.SSL_CERT_FILE = `${OSGEO4W_ROOT}\\bin\\curl-ca-bundle.crt`
-  env.SSL_CERT_DIR = `${OSGEO4W_ROOT}\\apps\\openssl\\certs`
-  env.PROJ_LIB = `${OSGEO4W_ROOT}\\share\\proj`
+  // Valores retirados de <QGIS>\bin\etc\ini\*.bat da instalacao do QGIS 4.0.
+  env.GDAL_DATA = `${OSGEO4W_ROOT}\\apps\\gdal\\share\\gdal`;
+  env.GDAL_DRIVER_PATH = `${OSGEO4W_ROOT}\\apps\\gdal\\lib\\gdalplugins`;
+  env.GS_LIB = `${OSGEO4W_ROOT}\\apps\\gs\\lib`;
+  env.JPEGMEM = 1000000;
+  env.OPENSSL_ENGINES = `${OSGEO4W_ROOT}\\lib\\engines-3`;
+  env.SSL_CERT_FILE = `${OSGEO4W_ROOT}\\bin\\curl-ca-bundle.crt`;
+  env.SSL_CERT_DIR = `${OSGEO4W_ROOT}\\apps\\openssl\\certs`;
+  env.PDAL_DRIVER_PATH = `${OSGEO4W_ROOT}\\apps\\pdal\\plugins`;
+  // PROJ 9 (QGIS 4) usa PROJ_DATA; mantemos PROJ_LIB por compatibilidade.
+  env.PROJ_DATA = `${OSGEO4W_ROOT}\\share\\proj`;
+  env.PROJ_LIB = `${OSGEO4W_ROOT}\\share\\proj`;
   env.QGIS_PREFIX_PATH = `${OSGEO4W_ROOT.replace(/\\/g, '/')}/apps/qgis`;
   env.GDAL_FILENAME_IS_UTF8 = "YES";
   env.VSI_CACHE = "TRUE";
   env.VSI_CACHE_SIZE = "1000000";
-  env.QT_PLUGIN_PATH = `${OSGEO4W_ROOT}\\apps\\qgis\\qtplugins;${OSGEO4W_ROOT}\\apps\\qt5\\plugins`;
-  env.PYTHONPATH = `${OSGEO4W_ROOT}\\apps\\qgis\\python;${env.PYTHONPATH}`;
-  env.PYTHONPATH =`${OSGEO4W_ROOT}\\apps\\qgis\\python;${env.USERPROFILE}\\AppData\\Roaming\\QGIS\\QGIS3\\profiles\\default\\python\\plugins;${env.PYTHONPATH}`;
-  env.PATH = `${OSGEO4W_ROOT}\\apps\\qgis\\bin;${OSGEO4W_ROOT}\\apps\\grass\\grass78\\lib;${OSGEO4W_ROOT}\\apps\\grass\\grass78\\bin;${OSGEO4W_ROOT}\\apps\\qt5\\bin;${OSGEO4W_ROOT}\\apps\\Python39\\Scripts;${OSGEO4W_ROOT}\\bin;${OSGEO4W_ROOT}\\apps\\qgis\\python\\plugins;${env.PATH}`;
-  env.PYTHONHOME = `${OSGEO4W_ROOT}\\apps\\${env.PYTHON_DIR}`;
-  
-  const pythonScriptPath = path.join(OSGEO4W_ROOT, "apps", "Python39", "python");
+  env.PYTHONUTF8 = "1";
+  env.QT_PLUGIN_PATH = `${OSGEO4W_ROOT}\\apps\\qgis\\qtplugins;${OSGEO4W_ROOT}\\apps\\${QT_DIR}\\plugins`;
+  env.PYTHONHOME = `${OSGEO4W_ROOT}\\apps\\${PYTHON_DIR}`;
+  env.PYTHONPATH = [
+    `${OSGEO4W_ROOT}\\apps\\qgis\\python`,
+    QGIS_PROFILE_PLUGINS,
+    env.PYTHONPATH,
+  ].filter(Boolean).join(";");
+  env.PATH = [
+    `${OSGEO4W_ROOT}\\apps\\qgis\\bin`,
+    `${OSGEO4W_ROOT}\\apps\\grass\\${GRASS_DIR}\\lib`,
+    `${OSGEO4W_ROOT}\\apps\\grass\\${GRASS_DIR}\\bin`,
+    `${OSGEO4W_ROOT}\\apps\\${QT_DIR}\\bin`,
+    `${OSGEO4W_ROOT}\\apps\\${PYTHON_DIR}\\Scripts`,
+    `${OSGEO4W_ROOT}\\bin`,
+    `${OSGEO4W_ROOT}\\apps\\qgis\\python\\plugins`,
+    env.PATH,
+  ].filter(Boolean).join(";");
+
+  const pythonScriptPath = path.join(OSGEO4W_ROOT, "apps", PYTHON_DIR, "python");
 
   try {
     let executeCmd = `"${pythonScriptPath}" ${executeCmdArray.join(' ')}`

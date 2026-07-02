@@ -131,7 +131,27 @@ DB_PASSWORD=${dbPassword}
 JWT_SECRET=${secret}
 AUTH_SERVER=${authServer}
 QGIS_PATH=${qgisPath}
-FE_PATH=${fePath}`
+FE_PATH=${fePath}
+
+# --- QGIS (ajuste conforme a versao instalada; defaults = QGIS 4.0) ---
+# Nomes das pastas em <QGIS_PATH>\\apps
+QGIS_QT_DIR=Qt6
+QGIS_GRASS_DIR=grass84
+QGIS_PYTHON_DIR=Python312
+# Pasta de plugins do perfil do QGIS (vazio = derivado de FE_PATH)
+QGIS_PROFILE_PLUGINS_PATH=
+
+# --- Servico (opcionais; valores abaixo sao os defaults) ---
+# Exportacoes simultaneas do QGIS
+EXPORT_CONCURRENCY=1
+# Diretorio de saida dos produtos (vazio = <server>/src/export)
+PATH_EXPORT=
+# Rate limit da API (janela em ms e nº maximo de requisicoes por janela)
+RATE_LIMIT_WINDOW_MS=60000
+RATE_LIMIT_MAX=200
+# CORS: '*' libera todas as origens; ou lista separada por virgula
+CORS_ORIGIN=*
+`
 
   fs.writeFileSync(path.join(__dirname, 'server', 'config.env'), env)
 }
@@ -317,8 +337,8 @@ const getConfigFromUser = options => {
     questions.push({
       type: 'input',
       name: 'qgisPath',
-      message: 'Entre com o PATH para o QGIS 3.24',
-      default: 'C:\\Program Files\\QGIS 3.24.3'
+      message: 'Entre com o PATH para o QGIS 4',
+      default: 'C:\\Program Files\\QGIS 4.0.0'
     })
   }
 
@@ -430,7 +450,7 @@ program
   .option('-authUser, --auth-user <type>', 'Nome do usuário já existente Serviço de Autenticação que será administrador do Serviço Edição')
   .option('-authPassword, --auth-password <type>', 'Senha do usuário já existente Serviço de Autenticação que será administrador do Serviço Edição')
   .option('-overwriteEnv, --overwrite-env', 'Sobrescrever arquivo de configuração')
-  .option('-qgisPath, --qgis-path', 'PATH para o QGIS 3.24')
+  .option('-qgisPath, --qgis-path', 'PATH para o QGIS 4')
   .option('-fePath, --fe-path', 'PATH para o plugin Ferramentas de Edição')
 
 

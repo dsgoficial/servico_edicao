@@ -14,6 +14,12 @@ const swaggerOptions = require("./swagger_options");
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 const {
+  RATE_LIMIT_WINDOW_MS,
+  RATE_LIMIT_MAX,
+  CORS_ORIGIN,
+} = require("../config");
+
+const {
   AppError,
   httpCode,
   logger,
@@ -32,15 +38,19 @@ app.use(express.json()); // parsear POST em JSON
 app.use(hpp()); // protection against parameter polution
 
 // CORS middleware
-app.use(cors());
+const corsOrigin =
+  CORS_ORIGIN === "*"
+    ? "*"
+    : CORS_ORIGIN.split(",").map((origin) => origin.trim());
+app.use(cors({ origin: corsOrigin }));
 
 // Helmet Protection
 //app.use(helmet());
 app.use(noCache());
 
 const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minuto
-  max: 200,
+  windowMs: RATE_LIMIT_WINDOW_MS,
+  max: RATE_LIMIT_MAX,
 });
 
 // apply limit all requests

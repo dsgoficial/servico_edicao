@@ -8,8 +8,8 @@
     "url": "git://github.com/dsgoficial/servico_edicao"
   },
   "engines": {
-    "node": "~8.7.0",
-    "npm": ">=5.4.2"
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   },
   "scripts": {
     "install-all": "npm install && cd server && npm install && cd ../client && npm install",
@@ -31,18 +31,18 @@
     "url": "https://github.com/dsgoficial/servico_edicao/issues"
   },
   "dependencies": {
-    "axios": "^0.27.2",
-    "bcryptjs": "^2.4.3",
+    "axios": "^1.12.2",
+    "bcryptjs": "^3.0.3",
     "bluebird": "^3.7.2",
-    "colors": "^1.4.0",
-    "commander": "^11.0.0",
-    "concurrently": "^7.2.2",
-    "fs-extra": "^10.1.0",
-    "inquirer": "8.2.2",
-    "npm-check-updates": "^15.0.2",
+    "colors": "1.4.0",
+    "commander": "^11.1.0",
+    "concurrently": "^7.6.0",
+    "fs-extra": "^11.3.0",
+    "inquirer": "^8.2.6",
+    "npm-check-updates": "^16.14.20",
     "npm-run": "^5.0.1",
-    "pg-promise": "^10.11.1",
+    "pg-promise": "^11.10.2",
     "pgtools": "^0.3.2",
-    "pm2": "^5.2.0"
+    "pm2": "^5.4.3"
   }
 }
